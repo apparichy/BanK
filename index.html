@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BanK – Money Tracker</title>
+  <title>BanK - Money Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,13 +12,11 @@
     header h1 { font-size: 1.8rem; color: #4ade80; letter-spacing: 2px; }
     #auth-section { text-align: center; padding: 4rem 1rem; }
     #auth-section h2 { margin-bottom: 1rem; color: #4ade80; }
-    .btn { background: #4ade80; color: #0f0f0f; border: none; padding: 0.6rem 1.4rem; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: background 0.2s; }
+    .btn { background: #4ade80; color: #0f0f0f; border: none; padding: 0.6rem 1.4rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn:hover { background: #22c55e; }
-    .btn-danger { background: #ef4444; color: #fff; }
-    .btn-danger:hover { background: #dc2626; }
     .btn-outline { background: transparent; border: 2px solid #4ade80; color: #4ade80; }
     .btn-outline:hover { background: #4ade80; color: #0f0f0f; }
-    input, select, textarea { background: #1e1e1e; border: 1px solid #333; color: #eee; padding: 0.5rem 0.8rem; border-radius: 6px; width: 100%; font-size: 0.95rem; }
+    input, select { background: #1e1e1e; border: 1px solid #333; color: #eee; padding: 0.5rem 0.8rem; border-radius: 6px; width: 100%; font-size: 0.95rem; }
     input:focus, select:focus { outline: none; border-color: #4ade80; }
     #main-app { display: none; max-width: 900px; margin: 0 auto; padding: 1.5rem; }
     .summary-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
@@ -30,10 +28,9 @@
     .card.balance .value { color: #60a5fa; }
     .section-title { font-size: 1.1rem; font-weight: bold; color: #4ade80; margin: 1.5rem 0 0.8rem; border-bottom: 1px solid #333; padding-bottom: 0.4rem; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-    .form-grid .full { grid-column: 1 / -1; }
     .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
     .form-group label { font-size: 0.82rem; color: #aaa; }
-    .form-actions { grid-column: 1 / -1; display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 0.4rem; }
+    .form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 0.4rem; }
     .entries-list { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem; }
     .entry-item { background: #1a1a2e; border-radius: 8px; padding: 0.8rem 1rem; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid transparent; }
     .entry-item.income { border-left-color: #4ade80; }
@@ -46,129 +43,65 @@
     .entry-actions { display: flex; gap: 0.5rem; margin-left: 1rem; }
     .entry-actions button { background: none; border: none; cursor: pointer; color: #888; font-size: 1rem; padding: 2px 6px; border-radius: 4px; }
     .entry-actions button:hover { color: #eee; background: #333; }
-    .filter-bar { display: flex; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .filter-bar select, .filter-bar input[type="month"] { max-width: 180px; }
+    .filter-bar { display: flex; gap: 0.8rem; margin-bottom: 1rem; }
     #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #4ade80; color: #0f0f0f; padding: 0.7rem 1.2rem; border-radius: 8px; font-weight: bold; display: none; z-index: 999; }
     #toast.error { background: #ef4444; color: #fff; }
     .empty-state { text-align: center; color: #555; padding: 2rem; }
-    @media (max-width: 600px) {
-      .summary-cards { grid-template-columns: 1fr; }
-      .form-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 600px) { .summary-cards { grid-template-columns: 1fr; } .form-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-
 <header>
   <h1>BanK</h1>
-  <div id="user-info" style="display:none; gap:0.8rem; align-items:center; display:flex">
+  <div id="user-info" style="display:none;gap:0.8rem;align-items:center;">
     <span id="user-email" style="color:#aaa;font-size:0.85rem"></span>
     <button class="btn btn-outline" onclick="signOut()">Sign Out</button>
   </div>
 </header>
-
-<!-- AUTH SECTION -->
 <div id="auth-section">
   <h2>Sign in to BanK</h2>
   <p style="color:#888;margin-bottom:1.5rem">Track your income and expenses securely.</p>
   <div style="max-width:360px;margin:0 auto;display:flex;flex-direction:column;gap:0.8rem">
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="auth-email" placeholder="you@example.com" />
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="auth-password" placeholder="Password" />
-    </div>
+    <div class="form-group"><label>Email</label><input type="email" id="auth-email" placeholder="you@example.com" /></div>
+    <div class="form-group"><label>Password</label><input type="password" id="auth-password" placeholder="Password" /></div>
     <div style="display:flex;gap:0.8rem">
       <button class="btn" style="flex:1" onclick="signIn()">Sign In</button>
       <button class="btn btn-outline" style="flex:1" onclick="signUp()">Sign Up</button>
     </div>
   </div>
 </div>
-
-<!-- MAIN APP -->
 <div id="main-app">
-  <!-- Summary Cards -->
   <div class="summary-cards">
-    <div class="card income">
-      <div class="label">Total Income</div>
-      <div class="value" id="total-income">$0.00</div>
-    </div>
-    <div class="card expense">
-      <div class="label">Total Expenses</div>
-      <div class="value" id="total-expenses">$0.00</div>
-    </div>
-    <div class="card balance">
-      <div class="label">Balance</div>
-      <div class="value" id="balance">$0.00</div>
-    </div>
+    <div class="card income"><div class="label">Total Income</div><div class="value" id="total-income">$0.00</div></div>
+    <div class="card expense"><div class="label">Total Expenses</div><div class="value" id="total-expenses">$0.00</div></div>
+    <div class="card balance"><div class="label">Balance</div><div class="value" id="balance">$0.00</div></div>
   </div>
-
-  <!-- Add Entry Form -->
   <div class="section-title">Add Entry</div>
   <div class="form-grid">
-    <div class="form-group">
-      <label>Type</label>
-      <select id="entry-type">
-        <option value="expense">Expense</option>
-        <option value="income">Income</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Amount ($)</label>
-      <input type="number" id="entry-amount" placeholder="0.00" min="0.01" step="0.01" />
-    </div>
-    <div class="form-group">
-      <label>Category</label>
-      <input type="text" id="entry-category" placeholder="e.g. Food, Salary, Rent" />
-    </div>
-    <div class="form-group">
-      <label>Date</label>
-      <input type="date" id="entry-date" />
-    </div>
-    <div class="form-group full">
-      <label>Description (optional)</label>
-      <input type="text" id="entry-desc" placeholder="What was this for?" />
-    </div>
-    <div class="form-actions">
-      <button class="btn" onclick="saveEntry()">Add Entry</button>
-    </div>
+    <div class="form-group"><label>Type</label><select id="entry-type"><option value="expense">Expense</option><option value="income">Income</option></select></div>
+    <div class="form-group"><label>Amount ($)</label><input type="number" id="entry-amount" placeholder="0.00" min="0.01" step="0.01" /></div>
+    <div class="form-group"><label>Category</label><input type="text" id="entry-category" placeholder="e.g. Food, Salary" /></div>
+    <div class="form-group"><label>Date</label><input type="date" id="entry-date" /></div>
+    <div style="grid-column:1/-1" class="form-group"><label>Description</label><input type="text" id="entry-desc" placeholder="What was this for?" /></div>
+    <div class="form-actions"><button class="btn" onclick="saveEntry()">Add Entry</button></div>
   </div>
-
-  <!-- Entries List -->
   <div class="section-title">Transactions</div>
   <div class="filter-bar">
-    <select id="filter-type" onchange="loadEntries()">
-      <option value="">All Types</option>
-      <option value="income">Income</option>
-      <option value="expense">Expense</option>
-    </select>
-    <input type="month" id="filter-month" onchange="loadEntries()" />
+    <select id="filter-type" onchange="loadEntries()"><option value="">All Types</option><option value="income">Income</option><option value="expense">Expense</option></select>
+    <input type="month" id="filter-month" onchange="loadEntries()" style="width:auto" />
   </div>
-  <div class="entries-list" id="entries-list">
-    <div class="empty-state">Loading...</div>
-  </div>
+  <div id="entries-list"><div class="empty-state">Loading...</div></div>
 </div>
-
 <div id="toast"></div>
-
 <script>
   const SUPABASE_URL = 'https://lxfpesgazzaevcfzivse.supabase.co';
-  const SUPABASE_ANON_KEY = 'REPLACE_WITH_YOUR_ANON_KEY';
-
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4ZnBlc2dhenphZXZjZnppdnNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3NzYxNzIsImV4cCI6MjA5ODM1MjE3Mn0.MdeaSu2VPnEDCyKZztl1BJTF8Gw1PsK-vr1jqp1LYHs';
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  let currentUser = null;
-  let editingId = null;
-
-  // Set default date to today
+  let currentUser = null, editingId = null;
   document.getElementById('entry-date').valueAsDate = new Date();
-
-  // Auth state listener
   sb.auth.onAuthStateChange(async (event, session) => {
-    if (session?.user) {
+    if (session && session.user) {
       currentUser = session.user;
       document.getElementById('auth-section').style.display = 'none';
       document.getElementById('main-app').style.display = 'block';
@@ -182,141 +115,46 @@
       document.getElementById('user-info').style.display = 'none';
     }
   });
-
-  async function signIn() {
-    const email = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) showToast(error.message, true);
-    else showToast('Signed in!');
-  }
-
-  async function signUp() {
-    const email = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-    const { error } = await sb.auth.signUp({ email, password });
-    if (error) showToast(error.message, true);
-    else showToast('Account created! Check your email to confirm.');
-  }
-
-  async function signOut() {
-    await sb.auth.signOut();
-  }
-
+  async function signIn() { const {error}=await sb.auth.signInWithPassword({email:document.getElementById('auth-email').value.trim(),password:document.getElementById('auth-password').value}); error?showToast(error.message,true):showToast('Signed in!'); }
+  async function signUp() { const {error}=await sb.auth.signUp({email:document.getElementById('auth-email').value.trim(),password:document.getElementById('auth-password').value}); error?showToast(error.message,true):showToast('Check email to confirm!'); }
+  async function signOut() { await sb.auth.signOut(); }
   async function loadEntries() {
     if (!currentUser) return;
-    const typeFilter = document.getElementById('filter-type').value;
-    const monthFilter = document.getElementById('filter-month').value;
-
-    let query = sb.from('entries').select('*').order('date', { ascending: false }).order('created_at', { ascending: false });
-    if (typeFilter) query = query.eq('type', typeFilter);
-    if (monthFilter) {
-      const [year, month] = monthFilter.split('-');
-      const start = year + '-' + month + '-01';
-      const end = new Date(year, month, 0).toISOString().split('T')[0];
-      query = query.gte('date', start).lte('date', end);
-    }
-
-    const { data, error } = await query;
-    if (error) { showToast(error.message, true); return; }
-    renderEntries(data);
-    updateSummary(data);
+    let q=sb.from('entries').select('*').order('date',{ascending:false}).order('created_at',{ascending:false});
+    const tf=document.getElementById('filter-type').value, mf=document.getElementById('filter-month').value;
+    if (tf) q=q.eq('type',tf);
+    if (mf) { const [y,m]=mf.split('-'); q=q.gte('date',y+'-'+m+'-01').lte('date',new Date(y,m,0).toISOString().split('T')[0]); }
+    const {data,error}=await q;
+    if (error) { showToast(error.message,true); return; }
+    renderEntries(data); updateSummary(data);
   }
-
-  function renderEntries(entries) {
-    const list = document.getElementById('entries-list');
-    if (!entries.length) { list.innerHTML = '<div class="empty-state">No transactions found.</div>'; return; }
-    list.innerHTML = entries.map(e => `
-      <div class="entry-item ${e.type}">
-        <div class="entry-info">
-          <div class="desc">${e.description || e.category}</div>
-          <div class="meta">${e.category} &middot; ${e.date}</div>
-        </div>
-        <div style="display:flex;align-items:center">
-          <div class="entry-amount ${e.type}">${e.type === 'income' ? '+' : '-'}$${parseFloat(e.amount).toFixed(2)}</div>
-          <div class="entry-actions">
-            <button onclick="editEntry('${e.id}')" title="Edit">✏️</button>
-            <button onclick="deleteEntry('${e.id}')" title="Delete">🗑️</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
+  function renderEntries(e) {
+    const l=document.getElementById('entries-list');
+    if (!e.length) { l.innerHTML='<div class="empty-state">No transactions yet.</div>'; return; }
+    l.innerHTML='<div class="entries-list">'+e.map(x=>'<div class="entry-item '+x.type+'"><div class="entry-info"><div class="desc">'+(x.description||x.category)+'</div><div class="meta">'+x.category+' &middot; '+x.date+'</div></div><div style="display:flex;align-items:center"><div class="entry-amount '+x.type+'">'+(x.type==="income"?"+":"-")+"$"+parseFloat(x.amount).toFixed(2)+'</div><div class="entry-actions"><button onclick="editEntry(''+x.id+'')">&#9998;</button><button onclick="deleteEntry(''+x.id+'')">&#128465;</button></div></div></div>').join('')+'</div>';
   }
-
-  function updateSummary(entries) {
-    const income = entries.filter(e => e.type === 'income').reduce((s, e) => s + parseFloat(e.amount), 0);
-    const expenses = entries.filter(e => e.type === 'expense').reduce((s, e) => s + parseFloat(e.amount), 0);
-    document.getElementById('total-income').textContent = '$' + income.toFixed(2);
-    document.getElementById('total-expenses').textContent = '$' + expenses.toFixed(2);
-    const bal = income - expenses;
-    const balEl = document.getElementById('balance');
-    balEl.textContent = '$' + Math.abs(bal).toFixed(2);
-    balEl.style.color = bal >= 0 ? '#60a5fa' : '#f87171';
+  function updateSummary(e) {
+    const inc=e.filter(x=>x.type==='income').reduce((s,x)=>s+parseFloat(x.amount),0);
+    const exp=e.filter(x=>x.type==='expense').reduce((s,x)=>s+parseFloat(x.amount),0);
+    document.getElementById('total-income').textContent='$'+inc.toFixed(2);
+    document.getElementById('total-expenses').textContent='$'+exp.toFixed(2);
+    const b=inc-exp,el=document.getElementById('balance');
+    el.textContent='$'+Math.abs(b).toFixed(2); el.style.color=b>=0?'#60a5fa':'#f87171';
   }
-
   async function saveEntry() {
-    const type = document.getElementById('entry-type').value;
-    const amount = parseFloat(document.getElementById('entry-amount').value);
-    const category = document.getElementById('entry-category').value.trim();
-    const date = document.getElementById('entry-date').value;
-    const description = document.getElementById('entry-desc').value.trim();
-
-    if (!amount || amount <= 0) { showToast('Enter a valid amount', true); return; }
-    if (!category) { showToast('Category is required', true); return; }
-    if (!date) { showToast('Date is required', true); return; }
-
-    const entry = { type, amount, category, date, description: description || null, user_id: currentUser.id };
-
-    let error;
-    if (editingId) {
-      ({ error } = await sb.from('entries').update(entry).eq('id', editingId));
-    } else {
-      ({ error } = await sb.from('entries').insert(entry));
-    }
-
-    if (error) { showToast(error.message, true); return; }
-    showToast(editingId ? 'Entry updated!' : 'Entry added!');
-    editingId = null;
-    clearForm();
-    loadEntries();
+    const type=document.getElementById('entry-type').value,amount=parseFloat(document.getElementById('entry-amount').value),category=document.getElementById('entry-category').value.trim(),date=document.getElementById('entry-date').value,description=document.getElementById('entry-desc').value.trim();
+    if (!amount||amount<=0){showToast('Enter valid amount',true);return;}
+    if (!category){showToast('Category required',true);return;}
+    if (!date){showToast('Date required',true);return;}
+    const entry={type,amount,category,date,description:description||null,user_id:currentUser.id};
+    const {error}=editingId?await sb.from('entries').update(entry).eq('id',editingId):await sb.from('entries').insert(entry);
+    if (error){showToast(error.message,true);return;}
+    showToast(editingId?'Updated!':'Added!'); editingId=null; clearForm(); loadEntries();
   }
-
-  function clearForm() {
-    document.getElementById('entry-type').value = 'expense';
-    document.getElementById('entry-amount').value = '';
-    document.getElementById('entry-category').value = '';
-    document.getElementById('entry-date').valueAsDate = new Date();
-    document.getElementById('entry-desc').value = '';
-  }
-
-  async function editEntry(id) {
-    const { data, error } = await sb.from('entries').select('*').eq('id', id).single();
-    if (error) { showToast(error.message, true); return; }
-    editingId = id;
-    document.getElementById('entry-type').value = data.type;
-    document.getElementById('entry-amount').value = data.amount;
-    document.getElementById('entry-category').value = data.category;
-    document.getElementById('entry-date').value = data.date;
-    document.getElementById('entry-desc').value = data.description || '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast('Editing entry – make changes and click Add Entry to save');
-  }
-
-  async function deleteEntry(id) {
-    if (!confirm('Delete this entry?')) return;
-    const { error } = await sb.from('entries').delete().eq('id', id);
-    if (error) { showToast(error.message, true); return; }
-    showToast('Entry deleted');
-    loadEntries();
-  }
-
-  function showToast(msg, isError = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = isError ? 'error' : '';
-    t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 3000);
-  }
+  function clearForm(){document.getElementById('entry-type').value='expense';['entry-amount','entry-category','entry-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('entry-date').valueAsDate=new Date();}
+  async function editEntry(id){const {data,error}=await sb.from('entries').select('*').eq('id',id).single();if(error){showToast(error.message,true);return;}editingId=id;document.getElementById('entry-type').value=data.type;document.getElementById('entry-amount').value=data.amount;document.getElementById('entry-category').value=data.category;document.getElementById('entry-date').value=data.date;document.getElementById('entry-desc').value=data.description||'';window.scrollTo({top:0,behavior:'smooth'});showToast('Editing - update then click Add Entry');}
+  async function deleteEntry(id){if(!confirm('Delete?'))return;const {error}=await sb.from('entries').delete().eq('id',id);error?showToast(error.message,true):(showToast('Deleted'),loadEntries());}
+  function showToast(msg,isError=false){const t=document.getElementById('toast');t.textContent=msg;t.className=isError?'error':'';t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
 </script>
 </body>
 </html>
